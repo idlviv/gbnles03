@@ -18,6 +18,8 @@
   },
   "homepage": "https://github.com/idlviv/gbnles03#readme",
   "dependencies": {
+    "cheerio": "^0.22.0",
+    "cors": "^2.8.1",
     "request": "^2.81.0"
   }
 }

@@ -2,43 +2,33 @@ var http = require("http");
 var urlUtils = require('url');
 var requestUtils = require('request');
 
-function onRequest(request, responsee) {
-  console.log('request', request);
+// var cors = require('cors');
+// use it before all route definitions
+// app.use(cors({origin: 'http://localhost:8080'}));
+
+function onRequest(request, response) {
   var params = urlUtils.parse(request.url, true);
-  console.dir(params);
 
-  var addr = 'https://translate.yandex.net/api/v1.5/tr.json/translate?' +
-    params.query.key + '&' +  params.query.lang + '&' + params.query.text;
+  params.protocol = 'https:';
 
-  requestUtils.get(addr, function(error, response, body) {
-    if (error) {
-      console.error(error);
+  delete params.pathname;
+  delete params.host;
+  params.hostname = 'translate.yandex.net/api/v1.5/tr.json/translate';
+
+  var link = urlUtils.format(params);
+
+  requestUtils.get(link, function (err, res, body) {
+    if (err) {
+      console.error(err);
     } else {
-      console.log(body);
-      console.log(response.status);
+      // console.log(body);
+      response.setHeader('Access-Control-Allow-Origin', 'http://localhost:63342');
+      response.writeHead(200, {'Content-Type': 'Text/plain', 'Cache-Control': 'max-age=31536000'});
 
-      // var response1 = JSON.parse(response);
-      // console.log('resp', response);
-      // console.log('resp1', response1);
-      //
-      // delete params.host;
-      // params.hostname = request.url;
-      //
-      // delete params.search;
-      // params.query = {
-      //   key: response1.key,
-      //   lang: response1.lang,
-      //   text: response1.text,
-      // };
-      // responsee = urlUtils.format(params);
+      response.write(body);
+      response.end();
     }
-
   });
-
-
-  responsee.writeHead(200, {'Content-Type': 'Text/plain'});
-  responsee.write('Hello');
-
 }
 
 http.createServer(onRequest).listen(8080);
