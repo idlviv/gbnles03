@@ -10,6 +10,7 @@ var cheerio = require('cheerio');
 function onRequest(request, response) {
   var params = urlUtils.parse(request.url, true);
 
+  // Task to translate
   if (params.query.task === 'translate'){
     params.protocol = 'https:';
     delete params.pathname;
@@ -21,7 +22,6 @@ function onRequest(request, response) {
       if (err) {
         console.error(err);
       } else {
-        // console.log(body);
         response.setHeader('Access-Control-Allow-Origin', 'http://localhost:63342');
         response.writeHead(200, {'Content-Type': 'Text/plain', 'Cache-Control': 'max-age=31536000'});
         response.write(body);
@@ -29,6 +29,7 @@ function onRequest(request, response) {
       }
     });
 
+    // Task to take news
   } else if (params.query.task === 'news') {
 
     params.protocol = 'https:';
@@ -45,24 +46,19 @@ function onRequest(request, response) {
         response.writeHead(200, {'Content-Type': 'Text/plain'});
 
         var $ = cheerio.load(html);
-        p = $('.ipsKursTable_interbank');
+        $('.ipsKursTable_interbank span.ipsKurs_rate').each(function(i, item) {
+          response.write($(item).text()+'-');
+        });
 
-        // $('.ipsKursTable_interbank').each(function(i, element) {
-        //
-        //   // console.log('i', typeof i.toString());
-        //   // console.log('element', typeof element);
-        //   // response.write(JSON.stringify(element));
-        //   response.write(i.toString());
+        // ----equal
+        // $('.ipsKursTable_interbank span.ipsKurs_rate').each(function() {
+        //   response.write($(this).text());
         // });
-        // console.log(body);
-
-
 
         response.end();
       }
     });
   }
-
 }
 
 http.createServer(onRequest).listen(8080);

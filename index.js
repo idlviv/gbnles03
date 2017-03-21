@@ -5,7 +5,7 @@ window.addEventListener('load', function() {
 
   var divTranslate = document.querySelector('#div_translate');
   var inpTranslate = document.querySelector('#inp_translate');
-  inpTranslate.value = 'text'
+  inpTranslate.value = 'text';
   var btnTranslate = document.querySelector('#btn_translate');
 
   var divNewsChild = document.createElement('div');
@@ -18,14 +18,8 @@ window.addEventListener('load', function() {
   divNews.appendChild(divNewsChild);
   divNews.appendChild(divNewsChild2);
   // divTranslate.insertBefore(divTranslateChild, btnTranslate);
-  var q = $('.ipsKursTable_interbank');
-  divNewsChild2.innerText = q;
-  console.log(q);
 
-  // var p = document.querySelectorAll('.ipsKursTable_interbank');
-  // console.log(p);
-
-
+  // get translate
   btnTranslate.addEventListener('click', function() {
     var key = inpTranslate.value;
     var req = new XMLHttpRequest();
@@ -38,42 +32,34 @@ window.addEventListener('load', function() {
         if (req.status === 200) {
           var response = JSON.parse(req.responseText);
           divTranslateChild.innerText = response.text;
-          console.dir(response);
           var headers = req.getAllResponseHeaders();
           divTranslateChild2.innerText = headers;
-          console.dir(typeof headers);
         }
       }
     });
-
   });
 
+  // get news
   btnNews.addEventListener('click', function() {
-    // var key = inpTranslate.value;
     var req = new XMLHttpRequest();
-
     req.open('GET', 'http://localhost:8080?' +
       'task=news');
     req.send();
     req.addEventListener('readystatechange', function() {
       if (req.readyState === req.DONE) {
         if (req.status === 200) {
-          // var response = JSON.parse(req.responseText);
-          // divNewsChild.innerText = response;
-          divNewsChild.innerText = req.responseText;
+          var arrResponse = req.responseText.split('-');
 
-          // console.dir(response);
+          divNewsChild.innerHTML = 'usd buy - ' + arrResponse[0] + '<br>' +
+            'usd sell - ' + arrResponse[1] + '<br>' +
+            'eur buy - ' + arrResponse[2] + '<br>' +
+            'eur sell - ' + arrResponse[3] + '<br>';
+
           var headers = req.getAllResponseHeaders();
           divNewsChild2.innerText = headers;
           // console.dir(typeof headers);
         }
       }
     });
-
   });
-
-
-
-
-
 });
